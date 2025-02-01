@@ -21,6 +21,7 @@ const RegisterForm = () => {
     const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
     const [message, setMessage] = useState<string>('');
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    console.log(process.env.NODE_ENV)
 
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
