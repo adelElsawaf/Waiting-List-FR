@@ -19,7 +19,7 @@ export default function AuthCallback() {
                 if (response.ok) {
                     const data = await response.json();
                     console.log(data);
-                    router.replace('/'); // Navigate to dashboard
+                    router.push('/'); // Navigate to dashboard
                 } else {
                     throw new Error('Authentication failed');
                 }
@@ -29,7 +29,7 @@ export default function AuthCallback() {
                 } else {
                     setError('An unexpected error occurred');
                 }
-                setTimeout(() => router.replace('/'), 2000);
+                setTimeout(() => router.push('/'), 2000);
             }
         };
 
