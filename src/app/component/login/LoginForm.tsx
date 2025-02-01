@@ -1,6 +1,6 @@
+'use client'
 import React, { useState } from "react";
-import { Box, Stack, Typography, TextField, Button, Divider, Snackbar, Alert } from "@mui/material";
-import { Google } from "@mui/icons-material";
+import { Box, Stack, Typography, TextField, Button, Snackbar, Alert } from "@mui/material";
 import Cookies from 'js-cookie';
 
 const LoginForm = () => {
@@ -9,16 +9,16 @@ const LoginForm = () => {
     const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
     const [message, setMessage] = useState<string>('');
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const handleLogin = async () => {
         try {
-            const response = await fetch("http://localhost:3001/auth/login", {
+            const response = await fetch(backendUrl + "auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ email, password }),
             });
-
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || "Login failed. Please try again.");
@@ -27,7 +27,7 @@ const LoginForm = () => {
             const data = await response.json();
 
 
-            Cookies.set('authToken', data.token, { path: '/', expires: 23 / 24 }); 
+            Cookies.set('authToken', data.token, { path: '/', expires: 23 / 24 });
             setIsSuccess(true);
             setMessage('Login Successful! Redirecting...');
             setOpenSnackbar(true);

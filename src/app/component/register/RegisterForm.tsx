@@ -1,6 +1,6 @@
 import { Divider, TextField, Typography, Button, Stack } from '@mui/material';
 import { Google } from '@mui/icons-material';
-import { useState, ChangeEvent, FormEvent, useEffect } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
 import Success from '../shared/Success';
 import Error from '../shared/Error';
 
@@ -20,6 +20,8 @@ const RegisterForm = () => {
     });
     const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
     const [message, setMessage] = useState<string>('');
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -30,13 +32,13 @@ const RegisterForm = () => {
     };
 
     const handleGoogleRegister = () => {
-        window.location.href = 'http://localhost:3001/auth/google';
+        window.location.href = backendUrl+'auth/google';
     };
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:3001/auth/register', {
+            const response = await fetch(backendUrl+'auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

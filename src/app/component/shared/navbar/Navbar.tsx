@@ -11,6 +11,8 @@ const Navbar = () => {
     const [isLoginFormOpened, setIsLoginFormOpened] = useState(false);
     const [userFullName, setUserFullName] = useState<string | null>(null); // Set type to string or null
     const [loading, setLoading] = useState<boolean>(true);
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 
     // Handle opening/closing of Register Form
     const handleRegisterFormOpening = () => {
@@ -24,9 +26,8 @@ const Navbar = () => {
 
     // Fetch username by token
     const fetchUsername = async (token: string) => {
-        console.log('Fetching user data for token:', token);
         try {
-            const response = await fetch('http://localhost:3001/users/by-token', {
+            const response = await fetch(backendUrl+'users/by-token', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
