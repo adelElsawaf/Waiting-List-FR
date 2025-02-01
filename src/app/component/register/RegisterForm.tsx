@@ -36,6 +36,7 @@ const RegisterForm = () => {
     };
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        console.log(backendUrl)
         e.preventDefault();
         try {
             const response = await fetch(backendUrl+'auth/register', {
