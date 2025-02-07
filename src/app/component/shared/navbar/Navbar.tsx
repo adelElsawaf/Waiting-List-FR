@@ -37,6 +37,7 @@ const Navbar = () => {
         try {
             const response = await fetch(`${backendUrl}/users/by-token`, {
                 method: 'GET',
+                credentials: 'include',
                 headers: { Authorization: `Bearer ${token}` },
             });
 
