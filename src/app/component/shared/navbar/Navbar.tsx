@@ -57,7 +57,7 @@ const Navbar = () => {
         try {
             const response = await fetch(`${backendUrl}/auth/logout`, {
                 method: 'GET',
-                credentials: 'include', // Required for cross-origin cookies
+                credentials: 'include',
             });
 
             if (response.ok) {
@@ -69,6 +69,7 @@ const Navbar = () => {
             console.error('Error logging out:', error);
         } finally {
             setUserFullName(null);
+            Cookies.remove('access_token');
         }
     };
 
