@@ -53,13 +53,25 @@ const Navbar = () => {
             setLoading(false);
         }
     };
+    const handleLogout = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/auth/logout`, {
+                method: 'GET',
+                credentials: 'include', // Required for cross-origin cookies
+            });
 
-    // Handle logout (clear localStorage and reset UI)
-    const handleLogout = () => {
-        Cookies.remove('access_token');
-        setUserFullName(null);
-        console.log('Logged out and token removed');
+            if (response.ok) {
+                console.log('Logged out successfully');
+            } else {
+                console.error('Logout failed');
+            }
+        } catch (error) {
+            console.error('Error logging out:', error);
+        } finally {
+            setUserFullName(null);
+        }
     };
+
 
     useEffect(() => {
         fetchUsername();
