@@ -1,44 +1,29 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // For Next.js app directory
+import { useRouter } from 'next/navigation'; 
 import { CircularProgress } from '@mui/material';
 
-export default function AuthCallback() {
+const CallbackPage: React.FC = () => {
     const router = useRouter();
-    const [error, setError] = useState<string>('');
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-    console.log('Backend URL:', backendUrl);
-    useEffect(() => {
-        const verifyAuth = async () => {
-            try {
-                const response = await fetch(`${backendUrl}auth/verify`, {
-                    credentials: 'include', // Important for cookies
-                });
-                console.log(response);
 
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log(data);
-                    router.push('/'); // Navigate to dashboard
-                } else {
-                    throw new Error('Authentication failed');
-                }
-            } catch (err: unknown) {
-                if (err instanceof Error) {
-                    setError(err.message);
-                } else {
-                    setError('An unexpected error occurred');
-                }
-                setTimeout(() => router.push('/'), 2000);
+    useEffect(() => {
+        const fetchToken = async () => {
+            const response = await fetch('http://localhost:3001/auth/google/redirect');
+            const { access_token } = await response.json();
+
+            if (access_token) {
+                // Store the token in local storage
+                localStorage.setItem('access_token', access_token);
+                // Redirect to the dashboard
+                router.push('/dashboard');
             }
         };
 
-        verifyAuth();
-    }, [backendUrl, router]);
+        fetchToken();
+    }, [router]);
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
             <CircularProgress />
-            <h1>{error}</h1>
         </div>
     );
 }

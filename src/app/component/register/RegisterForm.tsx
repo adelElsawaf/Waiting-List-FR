@@ -33,14 +33,14 @@ const RegisterForm = () => {
     };
 
     const handleGoogleRegister = () => {
-        window.location.href = backendUrl+'auth/google';
+        window.location.href = backendUrl+'/auth/google';
     };
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         console.log(backendUrl)
         e.preventDefault();
         try {
-            const response = await fetch(backendUrl+'auth/register', {
+            const response = await fetch(backendUrl+'/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -71,7 +71,6 @@ const RegisterForm = () => {
 
     return (
         <Stack bgcolor="#fff" padding={2}>
-            {/* Rest of your JSX remains the same */}
             <Typography variant="h5" fontWeight="bold" color="secondary">
                 Get Started With Waitly
             </Typography>
