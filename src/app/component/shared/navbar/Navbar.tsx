@@ -102,6 +102,7 @@ const Navbar = () => {
                                 spacing={2} // Space between logo and username
                                 sx={{ maxWidth: "300px", overflow: "hidden" }}
                             >
+                                
                                 <Typography
                                     variant="h6"
                                     sx={{
