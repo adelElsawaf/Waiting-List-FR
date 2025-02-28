@@ -99,10 +99,10 @@ const Navbar = () => {
                                 paddingLeft={3}
                                 direction="row"
                                 alignItems="center"
-                                spacing={2} // Space between logo and username
+                                spacing={1} // Space between logo and username
                                 sx={{ maxWidth: "300px", overflow: "hidden" }}
                             >
-                                
+
                                 <Typography
                                     variant="h6"
                                     sx={{
@@ -138,40 +138,44 @@ const Navbar = () => {
                                 </Button>
                             </Stack>
                         ) : (
-                            <>
-                                <Button
-                                    color="secondary"
-                                    variant="contained"
-                                    size="medium"
-                                    onClick={handleRegisterFormOpening}
-                                    sx={{
-                                        textTransform: "none",
-                                        fontWeight: "bold",
-                                        px: { xs: 2, sm: 3 },
-                                        py: { xs: 1, sm: 1.2 },
-                                        fontSize: { xs: "0.9rem", sm: "1rem" },
-                                        minWidth: "120px",
-                                    }}
-                                >
-                                    Get Started
-                                </Button>
-                                <Button
-                                    color="secondary"
-                                    variant="outlined"
-                                    size="medium"
-                                    onClick={handleLoginFormOpening}
-                                    sx={{
-                                        textTransform: "none",
-                                        fontWeight: "bold",
-                                        px: { xs: 2, sm: 3 },
-                                        py: { xs: 1, sm: 1.2 },
-                                        fontSize: { xs: "0.9rem", sm: "1rem" },
-                                        minWidth: "120px",
-                                    }}
-                                >
-                                    Log in
-                                </Button>
-                            </>
+                            <Stack direction={'row' }>
+                                <>
+                                    <Button
+                                        color="secondary"
+                                        variant="contained"
+                                        size="medium"
+                                        onClick={handleRegisterFormOpening}
+                                        sx={{
+                                            textTransform: "none",
+                                            fontWeight: "bold",
+                                            px: { xs: 1, sm: 3 },
+                                            py: { xs: 1, sm: 1.2 },
+                                            mx: { xs: 1 },
+                                            fontSize: { xs: "0.9rem", sm: "1rem" },
+                                            minWidth: "100px",
+                                        }}
+                                    >
+                                        Get Started
+                                    </Button>
+                                    <Button
+                                        color="secondary"
+                                        variant="outlined"
+                                        size="medium"
+                                        onClick={handleLoginFormOpening}
+                                        sx={{
+                                            textTransform: "none",
+                                            fontWeight: "bold",
+                                            px: { xs: 1, sm: 3 },
+                                            py: { xs: 1, sm: 1.2 },
+                                            fontSize: { xs: "0.9rem", sm: "1rem" },
+                                            minWidth: "100px",
+                                        }}
+                                    >
+                                        Log in
+                                    </Button>
+
+                                </>
+                            </Stack>
                         )}
 
 
