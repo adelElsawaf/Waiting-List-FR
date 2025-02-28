@@ -5,7 +5,7 @@ import EventIcon from "@mui/icons-material/Event";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Logo from "../shared/Logo";
-import {RocketLaunchOutlined } from "@mui/icons-material";
+import { RocketLaunchOutlined } from "@mui/icons-material";
 
 export default function HomePage() {
     return (
@@ -54,7 +54,7 @@ export default function HomePage() {
 
                     <Grid container spacing={4} justifyContent="center">
                         {features.map((feature, index) => (
-                            <Grid item xs={1} sm={6} md={2} key={index}>
+                            <Grid item xs={6} sm={6} md={2} key={index}>
                                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                                     {feature.icon}
                                     <Typography variant="h6" fontWeight="bold" sx={{ mt: 2 }}>
