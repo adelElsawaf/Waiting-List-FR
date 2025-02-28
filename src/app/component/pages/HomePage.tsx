@@ -5,7 +5,7 @@ import EventIcon from "@mui/icons-material/Event";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Logo from "../shared/Logo";
-import { Rocket, RocketLaunch, RocketLaunchOutlined } from "@mui/icons-material";
+import {RocketLaunchOutlined } from "@mui/icons-material";
 
 export default function HomePage() {
     return (

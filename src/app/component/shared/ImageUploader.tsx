@@ -7,7 +7,6 @@ import {
     Button,
     Alert,
     Card,
-    CardContent,
     CardMedia,
     CardActions,
     IconButton,
@@ -20,6 +19,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
+import Image from 'next/image';
 
 interface ImageUploaderProps {
     to: string; // Backend API URL for uploads
@@ -150,10 +150,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ to }) => {
                 setSuccess(true); // Mark upload as successful
                 setPreviewUrl(''); // Clear preview after upload
                 setFile(null);
-            } catch (err: any) {
-                if (err.name === 'TypeError') {
+            } catch (err: unknown) { // Use `unknown` instead of `any`
+                if (err instanceof TypeError) {
                     setError('Network error. Please check your connection and try again.');
-                } else if (err.message.includes('File already exists')) {
+                } else if (err instanceof Error && err.message.includes('File already exists')) {
                     setError('A file with this name already exists. Please rename your file and try again.');
                 } else {
                     setError('An unexpected error occurred. Please try again.');
@@ -243,7 +243,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ to }) => {
                             bgcolor="#f9f9f9"
                         >
                             {/* Image Preview */}
-                            <img
+                            <Image
                                 src={previewUrl}
                                 alt="Preview"
                                 style={{
