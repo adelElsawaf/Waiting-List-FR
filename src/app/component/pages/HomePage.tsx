@@ -12,9 +12,18 @@ export default function HomePage() {
         <Box sx={{ width: "100%", overflowX: "hidden" }}>
             {/* Hero Section */}
             <Container maxWidth="lg">
-                <Stack direction="column" alignItems="center" spacing={3} sx={{ textAlign: "center", mt: 8 }}>
+                <Stack direction="column" alignItems="center" spacing={3} sx={{ textAlign: "center", mt: { xs: 4, md: 8 } }}>
                     <Logo />
-                    <Typography variant="h3" fontWeight="bold" fontFamily="monospace" color="text.primary">
+                    <Typography
+                        variant="h3"
+                        fontWeight="bold"
+                        fontFamily="monospace"
+                        color="text.primary"
+                        sx={{
+                            fontSize: { xs: "1.8rem", sm: "2.5rem", md: "3rem" }, // Responsive font sizes
+                            lineHeight: { xs: "2rem", sm: "3rem", md: "3.5rem" }, // Adjust line height
+                        }}
+                    >
                         Empower your business with up to{" "}
                         <Box component="span" sx={{ fontWeight: "bold", color: "secondary.main", textDecoration: "underline" }}>
                             FIVE
@@ -22,12 +31,27 @@ export default function HomePage() {
                         stunning waiting pages.
                     </Typography>
 
-                    <Typography variant="h6" color="textSecondary">
+                    <Typography
+                        variant="h6"
+                        color="textSecondary"
+                        sx={{
+                            fontSize: { xs: "1rem", sm: "1.2rem", md: "1.5rem" }, // Responsive subtitle
+                            maxWidth: "80%", // Prevents text from stretching too wide
+                        }}
+                    >
                         Launch your waitlist instantly. Capture leads, build excitement, and prepare for your big launch with Waitly — absolutely free & no credit card required.
                     </Typography>
 
-                    <Button variant="contained" color="secondary" sx={{ px: 4, py: 1.5, fontSize: "1.1rem" }}>
-                        Get Started for Free
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        sx={{
+                            px: { xs: 3, sm: 4 },
+                            py: { xs: 1, sm: 1.5 },
+                            fontSize: { xs: "0.9rem", sm: "1.1rem" }, // Adjust button text size
+                        }}
+                    >
+                        Create A New Form
                     </Button>
                 </Stack>
             </Container>
@@ -124,7 +148,7 @@ export default function HomePage() {
                                         <Button
                                             variant={plan.highlight ? "contained" : "outlined"}
                                             color="secondary"
-                                            sx={{ mt: 3, px: 4, py: 1 }}
+                                            sx={{ mt: 3,  py: 1 }}
                                         >
                                             {plan.buttonText}
                                         </Button>

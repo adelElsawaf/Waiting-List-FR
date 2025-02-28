@@ -105,7 +105,7 @@ const Navbar = () => {
                                 <Button
                                     color="secondary"
                                     variant="contained"
-                                    size="large"
+                                    size="medium"
                                     onClick={handleRegisterFormOpening}
                                     sx={{ textTransform: 'none', fontWeight: 'bold' }}
                                 >
@@ -114,7 +114,7 @@ const Navbar = () => {
                                 <Button
                                     color="secondary"
                                     variant="outlined"
-                                    size="large"
+                                    size="medium"
                                     onClick={handleLoginFormOpening}
                                     sx={{ textTransform: 'none', fontWeight: 'bold' }}
                                 >

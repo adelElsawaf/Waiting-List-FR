@@ -56,11 +56,15 @@ const LoginForm = () => {
                 justifyContent: "center",
                 alignItems: "center",
                 backgroundColor: "#f5f5f5",
-            }}
+
+                }}
         >
             <Stack
                 bgcolor={"#fff"}
-                width={450}
+                sx={{
+                    width: { xs: "90vw", sm: "60vw", md: "40vw" }, // Responsive width
+                    maxWidth: "500px", // Limits maximum size on large screens
+                }}
             >
                 <Typography variant="h5" fontWeight={"bold"} color="secondary">
                     Login To Waitly
