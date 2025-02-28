@@ -85,21 +85,57 @@ const Navbar = () => {
                     <Logo />
                     <Stack spacing={1} direction="row" flex={1} justifyContent="flex-end">
                         {loading ? (
-                            <Typography variant="body1" sx={{ alignSelf: 'center' }}>
+                            <Typography
+                                variant="body1"
+                                sx={{
+                                    alignSelf: "center",
+                                    fontSize: { xs: "0.9rem", sm: "1rem" },
+                                }}
+                            >
                                 Loading...
                             </Typography>
                         ) : userFullName ? (
-                            <>
-                                <Typography variant="h6" sx={{ alignSelf: 'center' }}>
-                                    {userFullName
-                                        .split(' ')
-                                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                                        .join(' ')}
+                            <Stack
+                                paddingLeft={3}
+                                direction="row"
+                                alignItems="center"
+                                spacing={2} // Space between logo and username
+                                sx={{ maxWidth: "300px", overflow: "hidden" }}
+                            >
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        fontSize: { xs: "1rem", sm: "1.2rem" },
+                                        maxWidth: { xs: "120px", sm: "none" }, // Restrict width only on small screens
+                                        overflow: "hidden",
+                                        textOverflow: { xs: "ellipsis", sm: "clip" }, // Show "..." only on small screens
+                                        whiteSpace: "nowrap",
+                                        textAlign: "center",
+                                        flexGrow: 1, // Allows dynamic shrinking if space is needed
+                                        textTransform: "capitalize",
+                                    }}
+                                    title={userFullName} // Shows full name on hover
+                                >
+                                    {userFullName}
                                 </Typography>
-                                <Button color="secondary" variant="outlined" size="large" onClick={handleLogout} sx={{ textTransform: 'none', fontWeight: 'bold' }}>
+
+                                <Button
+                                    color="secondary"
+                                    variant="outlined"
+                                    size="large"
+                                    onClick={handleLogout}
+                                    sx={{
+                                        textTransform: "none",
+                                        fontWeight: "bold",
+                                        px: { xs: 2, sm: 3 },
+                                        py: { xs: 1, sm: 1.2 },
+                                        fontSize: { xs: "0.9rem", sm: "1rem" },
+                                        flexShrink: 0, // Prevents button from shrinking due to long names
+                                    }}
+                                >
                                     Log out
                                 </Button>
-                            </>
+                            </Stack>
                         ) : (
                             <>
                                 <Button
@@ -107,7 +143,14 @@ const Navbar = () => {
                                     variant="contained"
                                     size="medium"
                                     onClick={handleRegisterFormOpening}
-                                    sx={{ textTransform: 'none', fontWeight: 'bold' }}
+                                    sx={{
+                                        textTransform: "none",
+                                        fontWeight: "bold",
+                                        px: { xs: 2, sm: 3 },
+                                        py: { xs: 1, sm: 1.2 },
+                                        fontSize: { xs: "0.9rem", sm: "1rem" },
+                                        minWidth: "120px",
+                                    }}
                                 >
                                     Get Started
                                 </Button>
@@ -116,12 +159,21 @@ const Navbar = () => {
                                     variant="outlined"
                                     size="medium"
                                     onClick={handleLoginFormOpening}
-                                    sx={{ textTransform: 'none', fontWeight: 'bold' }}
+                                    sx={{
+                                        textTransform: "none",
+                                        fontWeight: "bold",
+                                        px: { xs: 2, sm: 3 },
+                                        py: { xs: 1, sm: 1.2 },
+                                        fontSize: { xs: "0.9rem", sm: "1rem" },
+                                        minWidth: "120px",
+                                    }}
                                 >
                                     Log in
                                 </Button>
                             </>
                         )}
+
+
                     </Stack>
                 </Toolbar>
             </AppBar>
