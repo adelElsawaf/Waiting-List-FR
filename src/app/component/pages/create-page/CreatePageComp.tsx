@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Typography, Divider, Paper } from "@mui/material";
+import { Divider, Paper } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import PageEssentials from "../../create-page-essentials/CreatePageEssentials";
 import DynamicFormData from "../../create-dynamic-form/CreateDynamicForm"; // Right side (Disabled until submit)

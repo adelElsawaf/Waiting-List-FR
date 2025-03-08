@@ -17,8 +17,7 @@ interface ImageUploaderProps {
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelect }) => {
-    const [file, setFile] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string>("");
+    const [previewUrl, setPreviewUrl] = useState<string>(""); // ✅ Removed 'file' state
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -36,14 +35,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelect }) => {
     };
 
     const processFile = (selectedFile: File) => {
-        setFile(selectedFile);
-        setPreviewUrl(URL.createObjectURL(selectedFile));
-        onImageSelect(selectedFile); // Pass File to parent
+        setPreviewUrl(URL.createObjectURL(selectedFile)); // ✅ No need to store 'file', just set preview
+        onImageSelect(selectedFile);
     };
 
     const handleReset = () => {
-        setFile(null);
-        setPreviewUrl("");
+        setPreviewUrl(""); // ✅ Reset preview
         onImageSelect(null);
     };
 
@@ -56,9 +53,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelect }) => {
 
                 <Box
                     onClick={() => fileInputRef.current?.click()}
-                    onDragOver={(e) => {
-                        e.preventDefault();
-                    }}
+                    onDragOver={(e) => e.preventDefault()}
                     onDrop={handleDrop}
                     sx={{
                         border: "2px dashed #ccc",

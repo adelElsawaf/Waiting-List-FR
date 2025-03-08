@@ -74,12 +74,16 @@ export default function PageEssentials({ onSubmit }: Props) {
             setTimeout(() => {
                 onSubmit();
             }, 1000);
-        } catch (err: any) {
-            if (!err.message) return;
-            setError(err.message || "Something went wrong");
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message || "Something went wrong");
+            } else {
+                setError("An unexpected error occurred.");
+            }
         } finally {
             setLoading(false);
         }
+
     };
 
     return (

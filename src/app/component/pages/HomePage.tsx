@@ -22,7 +22,8 @@ export default function HomePage() {
             setOpenDialog(true);
         }
     };
-
+    console.log("x")
+    console.log(authToken)
     return (
         <Box sx={{ width: "100%", overflowX: "hidden" }}>
             {/* Hero Section */}
@@ -42,7 +43,7 @@ export default function HomePage() {
                     <Button
                         variant="contained"
                         color="secondary"
-                        href={authToken ? "/create-page" : "#"}
+                        href={"/create-page"}
                         onClick={handleCreateFormClick}
                         sx={{ px: { xs: 3, sm: 4 }, py: { xs: 1, sm: 1.5 }, fontSize: { xs: "0.9rem", sm: "1.1rem" } }}
                     >
