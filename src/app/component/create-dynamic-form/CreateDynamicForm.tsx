@@ -110,6 +110,7 @@ export default function DynamicFormData({ waitingPageId }: Props) {
                                 size="small"
                                 placeholder={field.placeholder}
                                 disabled
+                                type={field.type === FieldTypeEnum.DATE_PICKER ? "date" : "text"}
                             />
                         </Box>
                     </Grid>

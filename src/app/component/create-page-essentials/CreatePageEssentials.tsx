@@ -7,6 +7,7 @@ import {
     DialogContent, Box, Stack
 } from "@mui/material";
 import ImageUploader from "../shared/ImageUploader";
+import { SendRounded } from "@mui/icons-material";
 
 interface Props {
     onSubmit: (id: number) => void;
@@ -84,9 +85,24 @@ export default function PageEssentials({ onSubmit }: Props) {
                 <Stack spacing={2} mt={2}>
                     <TextField label="Title" size="small" name="title" color="secondary" fullWidth value={formData.title} onChange={handleInputChange} required />
                     <TextField label="Sub title" size="small" name="subTitle" color="secondary" fullWidth value={formData.subTitle} onChange={handleInputChange} required />
-                    <Button type="submit" variant="contained" color="secondary" fullWidth disabled={loading}>
-                        {loading ? <CircularProgress size={24} color="inherit" /> : "Submit"}
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="secondary"
+                        fullWidth
+                        disabled={loading}
+                        sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }} // ✅ Ensures proper spacing
+                    >
+                        {loading ? (
+                            <CircularProgress size={24} color="inherit" />
+                        ) : (
+                            <>
+                                Proceed
+                                <SendRounded fontSize="small" /> {/* ✅ Messenger send icon */}
+                            </>
+                        )}
                     </Button>
+
                 </Stack>
             </form>
 
