@@ -4,31 +4,28 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import {
     TextField, Typography, Button, Alert, CircularProgress, Dialog, DialogTitle,
-    DialogContent
+    DialogContent, Box, Stack
 } from "@mui/material";
-import { Box, Stack } from "@mui/system";
 import ImageUploader from "../shared/ImageUploader";
 
 interface Props {
-    onSubmit: () => void;
+    onSubmit: (id: number) => void;
 }
 
 export default function PageEssentials({ onSubmit }: Props) {
     const [formData, setFormData] = useState({ title: "", subTitle: "" });
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [openDialog, setOpenDialog] = useState(false);
+    const [success, setSuccess] = useState(false); // ✅ Success state
+    const [openUpgradeDialog, setOpenUpgradeDialog] = useState(false); // ✅ Upgrade Dialog State
 
     const router = useRouter();
     const authToken = Cookies.get("access_token") || null;
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     useEffect(() => {
-        if (!authToken) {
-            router.push("/"); // Redirect to home if no token exists
-        }
+        if (!authToken) router.push("/");
     }, [authToken, router]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,6 +36,7 @@ export default function PageEssentials({ onSubmit }: Props) {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        setSuccess(false);
 
         if (!formData.title.trim() || !formData.subTitle.trim() || !selectedFile) {
             setError("Please upload an image and fill all fields.");
@@ -47,90 +45,83 @@ export default function PageEssentials({ onSubmit }: Props) {
         }
 
         try {
-            // ✅ Create FormData to send file & form fields in one request
             const data = new FormData();
             data.append("file", selectedFile);
             data.append("title", formData.title);
             data.append("subTitle", formData.subTitle);
 
-            // ✅ Submit request to backend (Single API call for transaction safety)
             const response = await fetch(`${backendUrl}/waiting-page`, {
                 method: "POST",
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-                body: data, // Sending `multipart/form-data`
+                headers: { Authorization: `Bearer ${authToken}` },
+                body: data,
             });
 
-            if (!response.ok) {
-                if (response.status === 400) {
-                    setOpenDialog(true); // Open subscription alert dialog
-                    throw new Error("");
-                }
-                throw new Error("Form submission failed");
+            if (response.status === 400) {
+                setOpenUpgradeDialog(true); // ✅ Show upgrade dialog if limit is reached
+                throw new Error("Upgrade required to create more pages.");
             }
 
-            setSuccess(true);
-            setTimeout(() => {
-                onSubmit();
-            }, 1000);
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(err.message || "Something went wrong");
-            } else {
-                setError("An unexpected error occurred.");
-            }
+            if (!response.ok) throw new Error("Form submission failed");
+
+            const result = await response.json();
+            setSuccess(true); // ✅ Show success message
+            onSubmit(result.id); // ✅ Send waitingPageId to parent
+
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
         } finally {
             setLoading(false);
         }
-
     };
 
     return (
-        <Box sx={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}>
+        <Box>
             <Typography variant="h5" fontWeight={600} mb={2}>
                 Page Essentials
             </Typography>
+            <ImageUploader onImageSelect={(file) => setSelectedFile(file)} />
+            <form onSubmit={handleSubmit}>
+                <Stack spacing={2} mt={2}>
+                    <TextField label="Title" size="small" name="title" color="secondary" fullWidth value={formData.title} onChange={handleInputChange} required />
+                    <TextField label="Sub title" size="small" name="subTitle" color="secondary" fullWidth value={formData.subTitle} onChange={handleInputChange} required />
+                    <Button type="submit" variant="contained" color="secondary" fullWidth disabled={loading}>
+                        {loading ? <CircularProgress size={24} color="inherit" /> : "Submit"}
+                    </Button>
+                </Stack>
+            </form>
 
-            <Box sx={{ p: 3, borderRadius: 2, boxShadow: 2, bgcolor: "grey.100", flex: 1, display: "flex", flexDirection: "column" }}>
-                <ImageUploader onImageSelect={(file) => setSelectedFile(file)} />
+            {/* ✅ Success Message */}
+            {success && (
+                <Alert severity="success" sx={{ mt: 2 }}>
+                     Page created successfully! You can now proceed.
+                </Alert>
+            )}
 
-                <form onSubmit={handleSubmit} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-                    <Stack spacing={2} mt={2} sx={{ flex: 1 }}>
-                        <TextField label="Title" size="small" name="title" fullWidth value={formData.title} onChange={handleInputChange} required />
-                        <TextField label="Sub title" size="small" name="subTitle" fullWidth value={formData.subTitle} onChange={handleInputChange} required />
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            color="secondary"
-                            fullWidth
-                            disabled={loading || !formData.title.trim() || !formData.subTitle.trim() || !selectedFile || !authToken}
-                        >
-                            {loading ? <CircularProgress size={24} color="inherit" /> : "Submit"}
-                        </Button>
-                    </Stack>
-                </form>
+            {/* ✅ Error Message */}
+            {error && (
+                <Alert severity="error" sx={{ mt: 2 }}>
+                    {error}
+                </Alert>
+            )}
 
-                {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
-                {success && <Alert severity="success" sx={{ mt: 2 }}>Page submitted successfully!</Alert>}
-            </Box>
-
-            <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="xs" fullWidth>
-                <DialogTitle sx={{ textAlign: "center", fontWeight: 600 }}>
+            {/* ✅ Upgrade Dialog (Restored & Styled) */}
+            <Dialog open={openUpgradeDialog} onClose={() => setOpenUpgradeDialog(false)} maxWidth="sm" fullWidth>
+                <DialogTitle sx={{ textAlign: "center", fontWeight: 600, pt:3}}>
                     Upgrade Required 🚀
                 </DialogTitle>
-                <DialogContent sx={{ textAlign: "center", px: 3, py: 2 }}>
-                    <Typography variant="body1" sx={{ mb: 2, color: "text.secondary" }}>
+                <DialogContent sx={{ textAlign: "center", px: 3, py: 3 }}>
+                    <Typography variant="body1" sx={{ mb: 2, color: "text.secondary", }}>
                         You’ve reached the limit of free pages. Upgrade now to unlock unlimited pages and premium features!
                     </Typography>
                 </DialogContent>
-                <Stack sx={{ display: "flex", flexDirection: "column", gap: 1, px: 3, pb: 3 }}>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2, px: 3, pb: 3 }}>
                     <Button
                         variant="contained"
                         color="secondary"
                         fullWidth
                         size="large"
-                        onClick={() => setOpenDialog(false)}
+                        sx={{ py: 1 }}
+                        onClick={() => setOpenUpgradeDialog(false)}
                     >
                         Upgrade Now
                     </Button>
@@ -139,11 +130,12 @@ export default function PageEssentials({ onSubmit }: Props) {
                         color="secondary"
                         fullWidth
                         size="large"
-                        onClick={() => setOpenDialog(false)}
+                        sx={{ py: 1 }}
+                        onClick={() => setOpenUpgradeDialog(false)}
                     >
                         Maybe Later
                     </Button>
-                </Stack>
+                </Box>
             </Dialog>
         </Box>
     );
