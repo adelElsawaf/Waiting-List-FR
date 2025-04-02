@@ -22,7 +22,7 @@ import { PageData } from "@/app/types/PageData";
 import InfoIcon from "@mui/icons-material/Info";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import { ContentCopy, Share } from "@mui/icons-material";
+import { ContentCopy } from "@mui/icons-material";
 
 const MyPage = () => {
     const params = useParams();
@@ -34,7 +34,6 @@ const MyPage = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -67,8 +66,8 @@ const MyPage = () => {
                 const data: PageData = await response.json();
                 console.log("Fetched Page Data:", data);
                 setPageData(data);
-            } catch (err: any) {
-                setError(err.message || "Failed to load data");
+            } catch (err) {
+                setError(err instanceof Error ? err.message : "Failed to load data");
             } finally {
                 setLoading(false);
             }
@@ -79,7 +78,6 @@ const MyPage = () => {
 
     const handleCopyUrl = (url: string) => {
         navigator.clipboard.writeText(url);
-        setCopiedUrl(url);
         setSnackbarOpen(true);
     };
 
@@ -110,9 +108,7 @@ const MyPage = () => {
 
     return (
         <Box sx={{ maxWidth: "1200px", mx: "auto", p: 3 }}>
-            {/* Grid for Page & Form Details with Equal Height */}
             <Grid container spacing={3} sx={{ display: "flex", alignItems: "stretch", mb: 4 }}>
-                {/* LEFT: Waiting Page Details */}
                 <Grid item xs={12} md={6} sx={{ display: "flex" }}>
                     <Paper elevation={3} sx={{
                         p: 4,
@@ -128,7 +124,6 @@ const MyPage = () => {
                         <Divider sx={{ mb: 2 }} />
                         <PageDetails page={pageData} />
 
-                        {/* Enhanced Shareable URL Section */}
                         <Box sx={{ mt: 'auto', pt: 3 }}>
                             <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
                                 Share this waiting page
@@ -184,7 +179,6 @@ const MyPage = () => {
                     </Paper>
                 </Grid>
 
-                {/* RIGHT: Disabled Form */}
                 <Grid item xs={12} md={6} sx={{ display: "flex" }}>
                     <Paper elevation={3} sx={{ p: 4, borderRadius: "12px", backgroundColor: "#fff", flex: 1 }}>
                         <Typography variant="h5" fontWeight="bold" color="secondary" sx={{ mb: 2, display: "flex", alignItems: "center" }}>
@@ -202,7 +196,6 @@ const MyPage = () => {
                 </Grid>
             </Grid>
 
-            {/* Submissions Section */}
             <Paper elevation={3} sx={{ p: 3, borderRadius: "12px", mt: 4 }}>
                 <Typography variant="h5" fontWeight="bold" color="secondary" sx={{ mb: 2, display: "flex", alignItems: "center" }}>
                     <AssignmentIcon sx={{ mr: 1 }} /> Submissions
@@ -211,7 +204,6 @@ const MyPage = () => {
                 <PageSubmissions submissions={pageData.form?.submissions || []} />
             </Paper>
 
-            {/* Snackbar for copy confirmation */}
             <Snackbar
                 open={snackbarOpen}
                 autoHideDuration={3000}

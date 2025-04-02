@@ -1,7 +1,6 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from "@mui/material";
 import TableChartIcon from "@mui/icons-material/TableChart";
 import { Submission } from "@/app/types/Submission";
-import { fontSize } from "@mui/system";
 
 interface PageSubmissionsProps {
     submissions: Submission[];
