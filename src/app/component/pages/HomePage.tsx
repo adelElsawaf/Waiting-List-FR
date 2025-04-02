@@ -22,8 +22,6 @@ export default function HomePage() {
             setOpenDialog(true);
         }
     };
-    console.log("x")
-    console.log(authToken)
     return (
         <Box sx={{ width: "100%", overflowX: "hidden" }}>
             {/* Hero Section */}
@@ -39,16 +37,26 @@ export default function HomePage() {
                     <Typography variant="h6" color="textSecondary" sx={{ fontSize: { xs: "1rem", sm: "1.2rem", md: "1.5rem" }, maxWidth: "80%" }}>
                         Launch your waitlist instantly. Capture leads, build excitement, and prepare for your big launch with Waitly — absolutely free & no credit card required.
                     </Typography>
-
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        href={"/create-page"}
-                        onClick={handleCreateFormClick}
-                        sx={{ px: { xs: 3, sm: 4 }, py: { xs: 1, sm: 1.5 }, fontSize: { xs: "0.9rem", sm: "1.1rem" } }}
-                    >
-                        Create A New Form
-                    </Button>
+                    <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            href="/create-page"
+                            onClick={handleCreateFormClick}
+                            sx={{ px: { xs: 3, sm: 2 }, py: { xs: 1, sm: 1.5 }, fontSize: { xs: "0.9rem", sm: "1.1rem" } }}
+                        >
+                            Create New page
+                        </Button>
+                        {authToken && <Button
+                            variant="outlined"
+                            color="secondary"
+                            href="/my-pages"
+                            onClick={handleCreateFormClick}
+                            sx={{ px: { xs: 3, sm: 2 }, py: { xs: 1, sm: 1.5 } , mx: 2, fontSize: { xs: "0.9rem", sm: "1.1rem" } }}
+                        >
+                            My pages
+                        </Button>}
+                    </Box>
                 </Stack>
             </Container>
 

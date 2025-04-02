@@ -28,8 +28,14 @@ const FieldModal: React.FC<FieldModalProps> = ({ open, onClose, onSave }) => {
         }
         setTitleError(false);
 
-        const newField: Field = { title, placeholder, isMandatory, type };
-        onSave(newField); // Send data to parent
+        const newField: Field = {
+            id: Date.now(), // Generate unique ID
+            title,
+            placeholder,
+            isMandatory,
+            type
+        };
+        onSave(newField);
         handleReset();
     };
 
@@ -108,7 +114,6 @@ const FieldModal: React.FC<FieldModalProps> = ({ open, onClose, onSave }) => {
                     <MenuItem value={FieldTypeEnum.DATE_PICKER}>Date Picker</MenuItem>
                 </Select>
 
-                {/* Buttons */}
                 <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
                     <Button
                         variant="contained"

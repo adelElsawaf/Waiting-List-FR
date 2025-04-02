@@ -4,6 +4,7 @@ export enum FieldTypeEnum {
 }
 
 export interface Field {
+    id: number;
     title: string;
     placeholder?: string;
     isMandatory: boolean;

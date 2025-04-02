@@ -70,6 +70,7 @@ const Navbar = () => {
         } finally {
             setUserFullName(null);
             Cookies.remove('access_token');
+            window.location.href = '/';
         }
     };
 
