@@ -36,7 +36,16 @@ export default function WaitingPage() {
 
     const handleChange = (fieldId: number, value: string) => {
         setFormValues((prev) => ({ ...prev, [fieldId]: value }));
-        setErrors((prev) => ({ ...prev, [fieldId]: "" }));
+        setErrors((prev) => {
+            const updatedErrors = { ...prev, [fieldId]: "" }; // Reset error on change
+            if (data?.form.fields[fieldId]?.type === "email" && value) {
+                const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+                if (!emailRegex.test(value)) {
+                    updatedErrors[fieldId] = `⚠️ Invalid email format`;
+                }
+            }
+            return updatedErrors;
+        });
     };
 
     const validateForm = () => {
@@ -44,6 +53,11 @@ export default function WaitingPage() {
         data?.form.fields.forEach((field) => {
             if (field.isMandatory && !formValues[field.id]?.trim()) {
                 newErrors[field.id] = `⚠️ ${field.title} is required`;
+            }
+
+            // Additional validation for email
+            if (field.type === "email" && formValues[field.id] && !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(formValues[field.id])) {
+                newErrors[field.id] = `⚠️ Invalid email format`;
             }
         });
         setErrors(newErrors);
@@ -152,8 +166,8 @@ export default function WaitingPage() {
                                 label={field.title}
                                 placeholder={field.placeholder || ""}
                                 required={field.isMandatory}
-                                type={field.type === "DatePicker" ? "date" : "text"}
-                                InputLabelProps={field.type === "DatePicker" ? { shrink: true } : {}}
+                                type={field.type}
+                                InputLabelProps={field.type === "date" ? { shrink: true } : {}}
                                 value={formValues[field.id] || ""}
                                 onChange={(e) => handleChange(field.id, e.target.value)}
                                 error={!!errors[field.id]}

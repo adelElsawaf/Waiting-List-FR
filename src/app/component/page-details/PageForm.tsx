@@ -1,3 +1,4 @@
+import { FieldTypeEnum } from "@/app/types/FieldTypesEnum";
 import { PageFormData } from "@/app/types/PageFormData";
 import { Box, TextField } from "@mui/material";
 
@@ -21,13 +22,13 @@ const PageForms: React.FC<PageFormsProps> = ({ form, disabled = false }) => {
                     key={field.id}
                     fullWidth
                     label={field.title}
-                    placeholder={field.type === "DatePicker" ? undefined : field.placeholder || ""}
+                    placeholder={field.type === FieldTypeEnum.DATE_PICKER ? undefined : field.placeholder || ""}
                     required={field.isMandatory}
-                    type={field.type === "DatePicker" ? "date" : "text"}
+                    type={field.type}
                     variant="outlined"
                     sx={{ mb: 2 }}
                     disabled={disabled}
-                    InputLabelProps={field.type === "DatePicker" ? { shrink: true } : undefined}
+                    InputLabelProps={field.type === FieldTypeEnum.DATE_PICKER ? { shrink: true } : undefined}
                 />
             ))}
         </Box>

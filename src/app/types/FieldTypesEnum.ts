@@ -1,6 +1,7 @@
 export enum FieldTypeEnum {
-    TEXT_FIELD = 'TextField',
-    DATE_PICKER = 'DatePicker',
+    TEXT_FIELD = 'text',
+    DATE_PICKER = 'date',
+    EMAIL = 'email'
 }
 
 export interface Field {

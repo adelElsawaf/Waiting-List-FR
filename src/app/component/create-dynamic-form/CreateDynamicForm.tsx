@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-    Typography, Box, Button, TextField, Grid, Paper, IconButton, CircularProgress, Alert, Modal, Fade
+    Typography, Box, Button, TextField, Grid, Paper, IconButton,
+    CircularProgress, Alert, Modal, Fade, Divider
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
@@ -16,7 +17,8 @@ interface Props {
 export default function DynamicFormData({ waitingPageId }: Props) {
     const [modalOpen, setModalOpen] = useState(false);
     const [fields, setFields] = useState<Field[]>([]);
-    const [currentIndex, setCurrentIndex] = useState<number | null>(null);
+    const [seedFields, setSeedFields] = useState<Field[]>([]);
+    const [fieldToEdit, setFieldToEdit] = useState<Field | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
@@ -25,21 +27,51 @@ export default function DynamicFormData({ waitingPageId }: Props) {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     const handleOpenModal = (index: number | null = null) => {
-        setCurrentIndex(index);
+        if (index !== null) {
+            setFieldToEdit(fields[index]);
+        } else {
+            setFieldToEdit(null);
+        }
         setModalOpen(true);
     };
 
-    const handleSaveField = (newField: Field) => {
-        setFields(prevFields => {
-            const updatedFields = [...prevFields];
-            if (currentIndex !== null) {
-                updatedFields[currentIndex] = newField;
-            } else {
-                updatedFields.push(newField);
+    useEffect(() => {
+        const fetchSeedFields = async () => {
+            try {
+                const response = await fetch(`${backendUrl}/field/seed`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${authToken}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch seed fields.");
+                }
+
+                const seedFields: Field[] = await response.json();
+                setSeedFields(seedFields);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : "Error fetching seed fields.");
             }
-            return updatedFields;
-        });
+        };
+
+        fetchSeedFields();
+    }, [backendUrl, authToken]);
+
+    const handleSaveField = (field: Field) => {
+        if (fieldToEdit) {
+            // Update existing field
+            setFields(prevFields =>
+                prevFields.map(f => f.id === field.id ? field : f)
+            );
+        } else {
+            // Add new field
+            setFields(prevFields => [...prevFields, field]);
+        }
         setModalOpen(false);
+        setFieldToEdit(null);
     };
 
     const handleSubmitForm = async () => {
@@ -59,7 +91,7 @@ export default function DynamicFormData({ waitingPageId }: Props) {
                     title: field.title,
                     placeholder: field.placeholder || "",
                     isMandatory: field.isMandatory,
-                    type: field.type === FieldTypeEnum.TEXT_FIELD ? "TextField" : "DatePicker"
+                    type: field.type
                 }))
             };
 
@@ -78,8 +110,8 @@ export default function DynamicFormData({ waitingPageId }: Props) {
             }
 
             setSuccess(true);
-            setFields([]); // Clear form after success
-            setTimeout(() => setSuccess(false), 3000); // Auto-hide success message after 3s
+            setFields([]);
+            setTimeout(() => setSuccess(false), 3000);
 
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occurred. Please try again.");
@@ -91,13 +123,37 @@ export default function DynamicFormData({ waitingPageId }: Props) {
     return (
         <Box sx={{ width: "100%", borderRadius: 2 }}>
             <Typography variant="h5" fontWeight={600} mb={3}>
+                Mandatory Fields
+            </Typography>
+
+            <Grid container spacing={2}>
+                {seedFields.map((field, index) => (
+                    <Grid item xs={12} sm={6} key={index}>
+                        <Box sx={{ mb: 2 }}>
+                            <Typography variant="body1" fontWeight={600}>{field.title}</Typography>
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                size="small"
+                                placeholder={field.placeholder}
+                                type={field.type === FieldTypeEnum.DATE_PICKER ? "date" : "text"}
+                                disabled
+                            />
+                        </Box>
+                    </Grid>
+                ))}
+            </Grid>
+
+            {seedFields.length > 0 && <Divider sx={{ my: 3 }} />}
+
+            <Typography variant="h5" fontWeight={600} mb={3}>
                 Dynamic Form Builder
             </Typography>
 
             <Grid container spacing={2}>
                 {fields.map((field, index) => (
                     <Grid item xs={12} sm={6} key={index}>
-                        <Box sx={{borderRadius: 2,}}>
+                        <Box sx={{ borderRadius: 2 }}>
                             <Box display="flex" justifyContent="space-between" alignItems="center">
                                 <Typography variant="body2" fontWeight={600}>{field.title}</Typography>
                                 <IconButton size="small" color="secondary" onClick={() => handleOpenModal(index)}>
@@ -109,14 +165,12 @@ export default function DynamicFormData({ waitingPageId }: Props) {
                                 variant="outlined"
                                 size="small"
                                 placeholder={field.placeholder}
-                                disabled
                                 type={field.type === FieldTypeEnum.DATE_PICKER ? "date" : "text"}
                             />
                         </Box>
                     </Grid>
                 ))}
 
-                {/* Add New Field Button */}
                 <Grid item xs={12} sm={6}>
                     <Paper
                         onClick={() => handleOpenModal()}
@@ -140,14 +194,16 @@ export default function DynamicFormData({ waitingPageId }: Props) {
                 </Grid>
             </Grid>
 
-            {/* Field Modal */}
             <FieldModal
                 open={modalOpen}
-                onClose={() => setModalOpen(false)}
+                onClose={() => {
+                    setModalOpen(false);
+                    setFieldToEdit(null);
+                }}
                 onSave={handleSaveField}
+                fieldToEdit={fieldToEdit}
             />
 
-            {/* Submit Button */}
             {fields.length > 0 && (
                 <Button
                     variant="contained"
@@ -161,14 +217,12 @@ export default function DynamicFormData({ waitingPageId }: Props) {
                 </Button>
             )}
 
-            {/* Enhanced Error Message */}
             {error && (
                 <Alert severity="error" sx={{ mt: 2 }}>
                     {error}
                 </Alert>
             )}
 
-            {/* Success Modal (Centered) */}
             <Modal open={success} onClose={() => setSuccess(false)}>
                 <Fade in={success}>
                     <Box

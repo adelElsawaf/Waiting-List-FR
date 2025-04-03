@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Modal, Box, TextField, Checkbox, FormControlLabel,
     Select, MenuItem, Button, Typography, IconButton
@@ -12,14 +12,32 @@ interface FieldModalProps {
     open: boolean;
     onClose: () => void;
     onSave: (field: Field) => void;
+    fieldToEdit?: Field | null;
 }
 
-const FieldModal: React.FC<FieldModalProps> = ({ open, onClose, onSave }) => {
+const FieldModal: React.FC<FieldModalProps> = ({ open, onClose, onSave, fieldToEdit }) => {
     const [title, setTitle] = useState<string>('');
     const [placeholder, setPlaceholder] = useState<string>('');
     const [isMandatory, setIsMandatory] = useState<boolean>(false);
     const [type, setType] = useState<FieldTypeEnum>(FieldTypeEnum.TEXT_FIELD);
     const [titleError, setTitleError] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (open) {
+            if (fieldToEdit) {
+                setTitle(fieldToEdit.title);
+                setPlaceholder(fieldToEdit.placeholder || '');
+                setIsMandatory(fieldToEdit.isMandatory);
+                setType(fieldToEdit.type);
+            } else {
+                setTitle('');
+                setPlaceholder('');
+                setIsMandatory(false);
+                setType(FieldTypeEnum.TEXT_FIELD);
+                setTitleError(false);
+            }
+        }
+    }, [open, fieldToEdit]);
 
     const handleSave = () => {
         if (!title.trim()) {
@@ -28,23 +46,16 @@ const FieldModal: React.FC<FieldModalProps> = ({ open, onClose, onSave }) => {
         }
         setTitleError(false);
 
-        const newField: Field = {
-            id: Date.now(), // Generate unique ID
+        const field: Field = {
+            id: fieldToEdit?.id || Date.now(),
             title,
             placeholder,
             isMandatory,
             type
         };
-        onSave(newField);
-        handleReset();
-    };
 
-    const handleReset = () => {
-        setTitle('');
-        setPlaceholder('');
-        setIsMandatory(false);
-        setType(FieldTypeEnum.TEXT_FIELD);
-        setTitleError(false);
+        onSave(field);
+        onClose();
     };
 
     return (
@@ -70,7 +81,7 @@ const FieldModal: React.FC<FieldModalProps> = ({ open, onClose, onSave }) => {
                 </IconButton>
 
                 <Typography variant="h6" gutterBottom>
-                    Create New Input Field
+                    {fieldToEdit ? 'Edit Field' : 'Add New Field'}
                 </Typography>
 
                 <TextField
@@ -112,6 +123,7 @@ const FieldModal: React.FC<FieldModalProps> = ({ open, onClose, onSave }) => {
                 >
                     <MenuItem value={FieldTypeEnum.TEXT_FIELD}>Text Field</MenuItem>
                     <MenuItem value={FieldTypeEnum.DATE_PICKER}>Date Picker</MenuItem>
+                    <MenuItem value={FieldTypeEnum.EMAIL}>Email</MenuItem>
                 </Select>
 
                 <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
@@ -123,16 +135,16 @@ const FieldModal: React.FC<FieldModalProps> = ({ open, onClose, onSave }) => {
                         disabled={!title.trim()}
                         size='large'
                     >
-                        Save Field
+                        {fieldToEdit ? 'Update Field' : 'Save Field'}
                     </Button>
                     <Button
                         variant="outlined"
                         color="secondary"
                         fullWidth
-                        onClick={handleReset}
+                        onClick={onClose}
                         size='large'
                     >
-                        Reset
+                        Cancel
                     </Button>
                 </Box>
             </Box>
