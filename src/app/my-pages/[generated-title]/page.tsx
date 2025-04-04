@@ -18,11 +18,12 @@ import {
 import PageDetails from "@/app/component/page-details/PageDetails";
 import PageForms from "@/app/component/page-details/PageForm";
 import PageSubmissions from "@/app/component/page-details/PageSubmissions";
-import { PageData } from "@/app/types/PageData";
 import InfoIcon from "@mui/icons-material/Info";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import { ContentCopy } from "@mui/icons-material";
+import { WaitingPageWithAnalytics } from "@/app/types/WaitingPageWithAnalytics";
+import PageAnalyticsChart from "@/app/component/shared/dashboard-chart/PageAnalyticsChart";
 
 const MyPage = () => {
     const params = useParams();
@@ -30,7 +31,7 @@ const MyPage = () => {
 
     const generatedTitle = params?.["generated-title"];
 
-    const [pageData, setPageData] = useState<PageData | null>(null);
+    const [pageData, setPageData] = useState<WaitingPageWithAnalytics | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -53,7 +54,7 @@ const MyPage = () => {
                     return;
                 }
 
-                const response = await fetch(`${backendUrl}/waiting-page/${generatedTitle}`, {
+                const response = await fetch(`${backendUrl}/waiting-page-with-analytics/${generatedTitle}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -63,7 +64,7 @@ const MyPage = () => {
 
                 if (!response.ok) throw new Error("Failed to fetch page data");
 
-                const data: PageData = await response.json();
+                const data: WaitingPageWithAnalytics = await response.json();
                 console.log("Fetched Page Data:", data);
                 setPageData(data);
             } catch (err) {
@@ -122,7 +123,13 @@ const MyPage = () => {
                             <InfoIcon sx={{ mr: 1 }} /> Page Details
                         </Typography>
                         <Divider sx={{ mb: 2 }} />
-                        <PageDetails page={pageData} />
+                        <PageDetails page={pageData.waitingPage} />
+                        <Divider sx={{ mt: 2}} />
+
+                        <PageAnalyticsChart
+                            uniqueViewers={pageData.numberOfUniqueViewers}
+                            numberOfSubmissions={pageData.numberOfSubmissions}
+                        ></PageAnalyticsChart>
 
                         <Box sx={{ mt: 'auto', pt: 3 }}>
                             <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
@@ -138,7 +145,7 @@ const MyPage = () => {
                                 overflow: 'hidden'
                             }}>
                                 <TextField
-                                    value={pageData.shareableURL}
+                                    value={pageData.waitingPage.shareableURL}
                                     size="small"
                                     fullWidth
                                     InputProps={{
@@ -160,7 +167,7 @@ const MyPage = () => {
                                 />
                                 <Tooltip title="Copy link">
                                     <IconButton
-                                        onClick={() => handleCopyUrl(pageData.shareableURL)}
+                                        onClick={() => handleCopyUrl(pageData.waitingPage.shareableURL)}
                                         sx={{
                                             px: 2,
                                             color: 'secondary.main',
@@ -185,8 +192,8 @@ const MyPage = () => {
                             <FormatListBulletedIcon sx={{ mr: 1 }} /> Form Details
                         </Typography>
                         <Divider sx={{ mb: 2 }} />
-                        {pageData.form ? (
-                            <PageForms form={pageData.form} disabled />
+                        {pageData.waitingPage.form ? (
+                            <PageForms form={pageData.waitingPage.form} disabled />
                         ) : (
                             <Typography textAlign="center" color="text.secondary">
                                 No forms available for this page.
@@ -201,7 +208,7 @@ const MyPage = () => {
                     <AssignmentIcon sx={{ mr: 1 }} /> Submissions
                 </Typography>
                 <Divider sx={{ mb: 2 }} />
-                <PageSubmissions submissions={pageData.form?.submissions || []} />
+                <PageSubmissions submissions={pageData.waitingPage.form?.submissions || []} />
             </Paper>
 
             <Snackbar

@@ -19,25 +19,52 @@ export default function WaitingPage() {
     const [loading, setLoading] = useState(true);
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-    useEffect(() => {
-        if (generatedTitle) {
-            fetch(`${backendUrl}/waiting-page/${generatedTitle}`)
-                .then((res) => res.json())
-                .then((data) => {
-                    setData(data);
-                    setLoading(false);
-                })
-                .catch((error) => {
-                    console.error("Error fetching data:", error);
-                    setLoading(false);
-                });
+    // 🧠 Fetch IP address
+    const getClientIP = async (): Promise<string | null> => {
+        try {
+            const response = await fetch("https://api.ipify.org?format=json");
+            const result = await response.json();
+            return result.ip;
+        } catch (error) {
+            console.error("Failed to get IP", error);
+            return null;
         }
+    };
+
+    useEffect(() => {
+        if (!generatedTitle) return;
+
+        const fetchPageAndLogView = async () => {
+            try {
+                // 1. Fetch page data
+                const res = await fetch(`${backendUrl}/waiting-page/${generatedTitle}`);
+                const pageData = await res.json();
+                setData(pageData);
+
+                // 2. Get IP and log the view
+                const ip = await getClientIP();
+                if (ip) {
+                    await fetch(`${backendUrl}/waiting-page-view-log/`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ waitingPageId: pageData.id,userIpAddress:ip }),
+                    });
+                    console.log("View logged");
+                }
+            } catch (err) {
+                console.error("Error fetching data or logging view:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPageAndLogView();
     }, [generatedTitle]);
 
     const handleChange = (fieldId: number, value: string) => {
         setFormValues((prev) => ({ ...prev, [fieldId]: value }));
         setErrors((prev) => {
-            const updatedErrors = { ...prev, [fieldId]: "" }; // Reset error on change
+            const updatedErrors = { ...prev, [fieldId]: "" };
             if (data?.form.fields[fieldId]?.type === "email" && value) {
                 const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
                 if (!emailRegex.test(value)) {
@@ -55,7 +82,6 @@ export default function WaitingPage() {
                 newErrors[field.id] = `⚠️ ${field.title} is required`;
             }
 
-            // Additional validation for email
             if (field.type === "email" && formValues[field.id] && !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(formValues[field.id])) {
                 newErrors[field.id] = `⚠️ Invalid email format`;
             }
@@ -71,7 +97,7 @@ export default function WaitingPage() {
             fieldId: Number(fieldId),
             answer,
         }));
-        console.log(answers);
+
         const response = await fetch(`${backendUrl}/form-submission/form/${data?.form.id}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -85,28 +111,19 @@ export default function WaitingPage() {
         }
     };
 
-    if (loading)
+    if (loading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
                 <CircularProgress color="secondary" />
             </Box>
         );
+    }
 
     if (!data) return <Typography align="center">⚠️ Error loading page.</Typography>;
 
     return (
-        <Box
-            sx={{
-                minHeight: "100vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                p: 2,
-            }}
-        >
-            {/* MUI Media Card */}
+        <Box sx={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", p: 2 }}>
             <Card sx={{ maxWidth: 600, width: "100%", borderRadius: 3, boxShadow: 5 }}>
-                {/* Card Media - Background Image with Overlay */}
                 <Box sx={{ position: "relative" }}>
                     <CardMedia
                         component="img"
@@ -115,7 +132,6 @@ export default function WaitingPage() {
                         alt={data.title}
                         sx={{ objectFit: "fill" }}
                     />
-                    {/* Overlay */}
                     <Box
                         sx={{
                             position: "absolute",
@@ -123,10 +139,9 @@ export default function WaitingPage() {
                             left: 0,
                             width: "100%",
                             height: "100%",
-                            backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark overlay
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
                         }}
                     />
-                    {/* Centered Title */}
                     <Typography
                         sx={{
                             position: "absolute",
@@ -138,27 +153,21 @@ export default function WaitingPage() {
                             textAlign: "center",
                             width: "100%",
                             fontSize: { xs: "2rem", sm: "2rem", md: "2.5rem" },
-                            px: 2, // Padding for responsiveness
-                            zIndex: 2, // Ensure text appears above overlay
+                            px: 2,
+                            zIndex: 2,
                         }}
                     >
                         {data.title}
                     </Typography>
                 </Box>
 
-                {/* Subtitle */}
                 <CardContent>
-                    <Typography
-                        variant="h6"
-                        sx={{ textAlign: "Start", color: "text.secondary", mb: 2 }}
-                    >
+                    <Typography variant="h6" sx={{ textAlign: "Start", color: "text.secondary", mb: 2 }}>
                         {data.subTitle}
                     </Typography>
 
-                    {/* Divider */}
                     <Divider sx={{ my: 2 }} />
 
-                    {/* Dynamic Form Fields */}
                     {data.form.fields.map((field) => (
                         <Box key={field.id} sx={{ mb: 2 }}>
                             <TextField
@@ -177,7 +186,6 @@ export default function WaitingPage() {
                         </Box>
                     ))}
 
-                    {/* Submit Button */}
                     <Button
                         variant="contained"
                         color="secondary"
@@ -186,7 +194,7 @@ export default function WaitingPage() {
                         sx={{ mt: 2, py: 1.5, fontSize: "1rem", fontWeight: "bold" }}
                     >
                         Submit
-                        <SendRounded sx={{ marginLeft: 1 }}></SendRounded>
+                        <SendRounded sx={{ marginLeft: 1 }} />
                     </Button>
                 </CardContent>
             </Card>
