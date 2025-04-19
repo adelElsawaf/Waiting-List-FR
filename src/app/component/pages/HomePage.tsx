@@ -9,7 +9,7 @@ import EventIcon from "@mui/icons-material/Event";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import Logo from "../shared/Logo";
 import { RocketLaunchOutlined } from "@mui/icons-material";
-import PricingPlans from "../shared/pricing-plance/PricingPlans";
+import CreditsPlans from "../shared/credit-plans/CreditPlans";
 
 export default function HomePage() {
     const [openDialog, setOpenDialog] = useState(false);
@@ -78,7 +78,7 @@ export default function HomePage() {
 
             {/* Pricing Cards */}
             <Box>
-                <PricingPlans/>
+                <CreditsPlans/>
             </Box>
     
         </Box>
