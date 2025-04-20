@@ -26,7 +26,7 @@ import { mutate } from "swr";
 interface Props {
     onSubmit: (id: number) => void;
 }
-
+ 
 export default function PageEssentials({ onSubmit }: Props) {
     const [formData, setFormData] = useState({ title: "", subTitle: "" });
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -36,7 +36,6 @@ export default function PageEssentials({ onSubmit }: Props) {
     const [success, setSuccess] = useState(false);
     const [openUpgradeDialog, setOpenUpgradeDialog] = useState(false);
     const [openConfirmPremiumDialog, setOpenConfirmPremiumDialog] = useState(false);
-
     const router = useRouter();
     const authToken = Cookies.get("access_token") || null;
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
