@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import {
     Modal, Box, TextField, Checkbox, FormControlLabel,
-    Select, MenuItem, Button, Typography, IconButton
+    Select, MenuItem, Button, Typography, IconButton, Stack
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { Field, FieldTypeEnum } from '@/app/types/FieldTypesEnum';
@@ -66,10 +66,11 @@ const FieldModal: React.FC<FieldModalProps> = ({ open, onClose, onSave, fieldToE
                     top: '50%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
-                    width: 400,
+                    width: '90%',
+                    maxWidth: 450,
                     bgcolor: 'background.paper',
                     boxShadow: 24,
-                    p: 4,
+                    p: { xs: 3, sm: 4 },
                     borderRadius: 2,
                 }}
             >
@@ -84,69 +85,67 @@ const FieldModal: React.FC<FieldModalProps> = ({ open, onClose, onSave, fieldToE
                     {fieldToEdit ? 'Edit Field' : 'Add New Field'}
                 </Typography>
 
-                <TextField
-                    fullWidth
-                    label="Field Title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    margin="normal"
-                    color="secondary"
-                    error={titleError}
-                    helperText={titleError ? "Title is required" : ""}
-                    required
-                />
-                <TextField
-                    fullWidth
-                    label="Placeholder (optional)"
-                    value={placeholder}
-                    onChange={(e) => setPlaceholder(e.target.value)}
-                    margin="normal"
-                    color="secondary"
-                />
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={isMandatory}
-                            onChange={(e) => setIsMandatory(e.target.checked)}
-                            color="secondary"
-                        />
-                    }
-                    label="Is Mandatory"
-                    sx={{ mt: 1 }}
-                />
-                <Select
-                    value={type}
-                    onChange={(e) => setType(e.target.value as FieldTypeEnum)}
-                    fullWidth
-                    sx={{ mt: 2 }}
-                    color="secondary"
-                >
-                    <MenuItem value={FieldTypeEnum.TEXT_FIELD}>Text Field</MenuItem>
-                    <MenuItem value={FieldTypeEnum.DATE_PICKER}>Date Picker</MenuItem>
-                    <MenuItem value={FieldTypeEnum.EMAIL}>Email</MenuItem>
-                </Select>
+                <Stack spacing={2} mt={2}>
+                    <TextField
+                        fullWidth
+                        label="Field Title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        color="secondary"
+                        error={titleError}
+                        helperText={titleError ? "Title is required" : ""}
+                        required
+                    />
+                    <TextField
+                        fullWidth
+                        label="Placeholder (optional)"
+                        value={placeholder}
+                        onChange={(e) => setPlaceholder(e.target.value)}
+                        color="secondary"
+                    />
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={isMandatory}
+                                onChange={(e) => setIsMandatory(e.target.checked)}
+                                color="secondary"
+                            />
+                        }
+                        label="Is Mandatory"
+                    />
+                    <Select
+                        value={type}
+                        onChange={(e) => setType(e.target.value as FieldTypeEnum)}
+                        fullWidth
+                        color="secondary"
+                    >
+                        <MenuItem value={FieldTypeEnum.TEXT_FIELD}>Text Field</MenuItem>
+                        <MenuItem value={FieldTypeEnum.DATE_PICKER}>Date Picker</MenuItem>
+                        <MenuItem value={FieldTypeEnum.EMAIL}>Email</MenuItem>
+                    </Select>
 
-                <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        fullWidth
-                        onClick={handleSave}
-                        disabled={!title.trim()}
-                        size='large'
-                    >
-                        {fieldToEdit ? 'Update Field' : 'Save Field'}
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        color="secondary"
-                        fullWidth
-                        onClick={onClose}
-                        size='large'
-                    >
-                        Cancel
-                    </Button>
-                </Box>
+                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} mt={2}>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            fullWidth
+                            onClick={handleSave}
+                            disabled={!title.trim()}
+                            size="large"
+                        >
+                            {fieldToEdit ? 'Update Field' : 'Save Field'}
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            fullWidth
+                            onClick={onClose}
+                            size="large"
+                        >
+                            Cancel
+                        </Button>
+                    </Stack>
+                </Stack>
             </Box>
         </Modal>
     );
