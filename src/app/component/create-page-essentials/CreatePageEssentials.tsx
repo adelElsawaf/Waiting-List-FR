@@ -1,14 +1,27 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import {
-    TextField, Typography, Button, Alert, CircularProgress, Dialog, DialogTitle,
-    DialogContent, DialogActions, Box, Stack
+    TextField,
+    Typography,
+    Button,
+    Alert,
+    CircularProgress,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Box,
+    Stack
 } from "@mui/material";
 import ImageUploader from "../shared/ImageUploader";
-import {SendRounded, WorkspacePremiumRounded } from "@mui/icons-material";
-import { mutate } from 'swr';
+import {
+    SendRounded,
+    WorkspacePremiumRounded
+} from "@mui/icons-material";
+import { mutate } from "swr";
 
 interface Props {
     onSubmit: (id: number) => void;
@@ -23,7 +36,6 @@ export default function PageEssentials({ onSubmit }: Props) {
     const [success, setSuccess] = useState(false);
     const [openUpgradeDialog, setOpenUpgradeDialog] = useState(false);
     const [openConfirmPremiumDialog, setOpenConfirmPremiumDialog] = useState(false);
-    const [isFreePage, setIsFreePage] = useState<boolean | null>(null);
 
     const router = useRouter();
     const authToken = Cookies.get("access_token") || null;
@@ -37,7 +49,7 @@ export default function PageEssentials({ onSubmit }: Props) {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const triggerSubmit = async () => {
+    const triggerSubmit = async (isFree: boolean) => {
         setLoading(true);
         setError(null);
         setSuccess(false);
@@ -53,7 +65,7 @@ export default function PageEssentials({ onSubmit }: Props) {
             data.append("file", selectedFile);
             data.append("title", formData.title);
             data.append("subTitle", formData.subTitle);
-            data.append("isFree", String(isFreePage));
+            data.append("isFree", String(isFree));
 
             const response = await fetch(`${backendUrl}/waiting-page`, {
                 method: "POST",
@@ -77,7 +89,6 @@ export default function PageEssentials({ onSubmit }: Props) {
             setSuccess(true);
             onSubmit(result.id);
             mutate(`${backendUrl}/users/by-token`);
-
         } catch (err) {
             setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
         } finally {
@@ -88,8 +99,7 @@ export default function PageEssentials({ onSubmit }: Props) {
 
     const handleFreeSubmit = () => {
         setActiveBtn("free");
-        setIsFreePage(true);
-        triggerSubmit();
+        triggerSubmit(true);
     };
 
     const handlePremiumSubmit = () => {
@@ -99,8 +109,7 @@ export default function PageEssentials({ onSubmit }: Props) {
     const confirmPremium = () => {
         setOpenConfirmPremiumDialog(false);
         setActiveBtn("premium");
-        setIsFreePage(false)
-        triggerSubmit();
+        triggerSubmit(false);
     };
 
     return (
@@ -134,7 +143,12 @@ export default function PageEssentials({ onSubmit }: Props) {
                         required
                     />
 
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent="center" alignItems="stretch">
+                    <Stack
+                        direction={{ xs: "column", sm: "row" }}
+                        spacing={2}
+                        justifyContent="center"
+                        alignItems="stretch"
+                    >
                         <Button
                             variant="outlined"
                             color="secondary"
@@ -143,7 +157,7 @@ export default function PageEssentials({ onSubmit }: Props) {
                             startIcon={<SendRounded />}
                             onClick={handleFreeSubmit}
                             disabled={loading && activeBtn === "free"}
-                            sx={{ height: "56px" }} // Ensures consistent height
+                            sx={{ height: "56px" }}
                         >
                             {loading && activeBtn === "free" ? (
                                 <CircularProgress size={18} color="inherit" />
@@ -161,7 +175,7 @@ export default function PageEssentials({ onSubmit }: Props) {
                                 startIcon={<WorkspacePremiumRounded />}
                                 onClick={handlePremiumSubmit}
                                 disabled={loading && activeBtn === "premium"}
-                                sx={{ height: "56px" }} // Ensures consistent height
+                                sx={{ height: "56px" }}
                             >
                                 {loading && activeBtn === "premium" ? (
                                     <CircularProgress size={18} color="inherit" />
@@ -170,35 +184,37 @@ export default function PageEssentials({ onSubmit }: Props) {
                                 )}
                             </Button>
 
-                            {/* Caption below the premium button */}
-                            <Typography variant="body2" color="textSecondary" align="center" sx={{ mt: 1 }}>
+                            <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                align="center"
+                                sx={{ mt: 1 }}
+                            >
                                 Recommended
                             </Typography>
                         </Stack>
                     </Stack>
-
-
-                    </Stack>
-
-
+                </Stack>
             </form>
 
-            {/* Success */}
             {success && (
                 <Alert severity="success" sx={{ mt: 3 }}>
                     Page created successfully! You can now proceed.
                 </Alert>
             )}
 
-            {/* Error */}
             {error && (
                 <Alert severity="error" sx={{ mt: 3 }}>
                     {error}
                 </Alert>
             )}
 
-            {/* Upgrade Dialog */}
-            <Dialog open={openUpgradeDialog} onClose={() => setOpenUpgradeDialog(false)} maxWidth="sm" fullWidth>
+            <Dialog
+                open={openUpgradeDialog}
+                onClose={() => setOpenUpgradeDialog(false)}
+                maxWidth="sm"
+                fullWidth
+            >
                 <DialogTitle sx={{ textAlign: "center", fontWeight: 600, pt: 3 }}>
                     Upgrade Required 🚀
                 </DialogTitle>
@@ -234,7 +250,6 @@ export default function PageEssentials({ onSubmit }: Props) {
                 </Box>
             </Dialog>
 
-            {/* Premium Confirmation Dialog */}
             <Dialog
                 open={openConfirmPremiumDialog}
                 onClose={() => setOpenConfirmPremiumDialog(false)}
