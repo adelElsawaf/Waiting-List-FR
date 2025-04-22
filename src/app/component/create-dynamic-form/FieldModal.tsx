@@ -49,7 +49,7 @@ const FieldModal: React.FC<FieldModalProps> = ({ open, onClose, onSave, fieldToE
         const field: Field = {
             id: fieldToEdit?.id || Date.now(),
             title,
-            placeholder,
+            placeholder: type == FieldTypeEnum.CHECKBOX ? "" : placeholder.trim(),
             isMandatory,
             type
         };
@@ -102,6 +102,7 @@ const FieldModal: React.FC<FieldModalProps> = ({ open, onClose, onSave, fieldToE
                         value={placeholder}
                         onChange={(e) => setPlaceholder(e.target.value)}
                         color="secondary"
+                        disabled={type === FieldTypeEnum.CHECKBOX}
                     />
                     <FormControlLabel
                         control={
@@ -115,13 +116,21 @@ const FieldModal: React.FC<FieldModalProps> = ({ open, onClose, onSave, fieldToE
                     />
                     <Select
                         value={type}
-                        onChange={(e) => setType(e.target.value as FieldTypeEnum)}
+                        onChange={(e) => {
+                            const selectedType = e.target.value as FieldTypeEnum;
+                            setType(selectedType);
+                            if (selectedType === FieldTypeEnum.CHECKBOX) {
+                                setPlaceholder('');
+                            }
+                        }}
                         fullWidth
                         color="secondary"
                     >
+
                         <MenuItem value={FieldTypeEnum.TEXT_FIELD}>Text Field</MenuItem>
                         <MenuItem value={FieldTypeEnum.DATE_PICKER}>Date Picker</MenuItem>
                         <MenuItem value={FieldTypeEnum.EMAIL}>Email</MenuItem>
+                        <MenuItem value={FieldTypeEnum.CHECKBOX}>Checkbox</MenuItem>    
                     </Select>
 
                     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} mt={2}>

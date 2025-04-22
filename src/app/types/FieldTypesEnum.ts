@@ -1,8 +1,10 @@
 export enum FieldTypeEnum {
-    TEXT_FIELD = 'text',
     DATE_PICKER = 'date',
-    EMAIL = 'email'
+    TEXT_FIELD = 'text',
+    EMAIL = 'email',
+    CHECKBOX = 'checkbox'
 }
+
 
 export interface Field {
     id: number;

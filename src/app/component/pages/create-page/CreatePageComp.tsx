@@ -7,10 +7,12 @@ import DynamicFormData from "../../create-dynamic-form/CreateDynamicForm"; // Ri
 import { LockClockOutlined } from "@mui/icons-material";
 
 export default function CreatePageComp() {
-    const [waitingPageId, setWaitingPageId] = useState<number | null>(null); // ✅ Store waitingPageId
+    const [waitingPageId, setWaitingPageId] = useState<number | null>(null);
+    const [redirectToLink, setRedirectToLink] = useState<string | null>(null); // ✅ Fix type issue
 
-    const handlePageSubmit = (id: number) => {
-        setWaitingPageId(id); // ✅ Only set ID when submission is successful
+    const handlePageSubmit = (id: number, link: string) => {
+        setWaitingPageId(id);
+        setRedirectToLink(link);
     };
 
     return (
@@ -19,22 +21,22 @@ export default function CreatePageComp() {
                 elevation={5}
                 sx={{
                     display: "flex",
-                    flexDirection: { xs: "column", lg: "row" }, // Stack on small, side-by-side on large
+                    flexDirection: { xs: "column", lg: "row" },
                     width: { lg: "70%", xs: "100%", md: "90%" },
                     minHeight: "500px",
                     borderRadius: 2,
                     p: 3,
                     gap: 2,
                     bgcolor: "background.paper",
-                    alignItems: "stretch", // ✅ Ensures both sections stretch equally
+                    alignItems: "stretch",
                 }}
             >
                 {/* Left Side - Page Essentials */}
                 <Box sx={{ flex: { xs: 1, lg: 4 }, display: "flex", flexDirection: "column", height: "100%" }}>
-                    <PageEssentials onSubmit={handlePageSubmit} /> {/* ✅ Pass function to get waitingPageId */}
+                    <PageEssentials onSubmit={handlePageSubmit} />
                 </Box>
 
-                {/* Divider (Hidden on Small Screens) */}
+                {/* Divider */}
                 <Divider
                     orientation="vertical"
                     flexItem
@@ -44,10 +46,10 @@ export default function CreatePageComp() {
                     }}
                 />
 
-                {/* Right Side - Dynamic Form (Disabled Until waitingPageId Exists) */}
+                {/* Right Side - Dynamic Form */}
                 <Box sx={{ flex: { xs: 1, lg: 6 }, display: "flex", height: "100%" }}>
-                    {waitingPageId ? (
-                        <DynamicFormData waitingPageId={waitingPageId} /> // ✅ Pass waitingPageId
+                    {waitingPageId !== null ? (
+                        <DynamicFormData waitingPageId={waitingPageId} redirectToLink={redirectToLink} />
                     ) : (
                         <Box
                             sx={{

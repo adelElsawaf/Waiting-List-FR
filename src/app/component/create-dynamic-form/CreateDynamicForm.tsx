@@ -2,19 +2,23 @@
 import { useEffect, useState } from "react";
 import {
     Typography, Box, Button, TextField, Grid, Paper, IconButton,
-    CircularProgress, Alert, Modal, Fade, Divider
+    CircularProgress, Alert, Modal, Fade, Divider, Checkbox,
+    FormControlLabel
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import FieldModal from "./FieldModal";
 import { Field, FieldTypeEnum } from "@/app/types/FieldTypesEnum";
 import Cookies from "js-cookie";
+import { Delete } from "@mui/icons-material";
+import { Stack } from "@mui/system";
 
 interface Props {
     waitingPageId: number;
+    redirectToLink: string | null;
 }
 
-export default function DynamicFormData({ waitingPageId }: Props) {
+export default function DynamicFormData({ waitingPageId, redirectToLink }: Props) {
     const [modalOpen, setModalOpen] = useState(false);
     const [fields, setFields] = useState<Field[]>([]);
     const [seedFields, setSeedFields] = useState<Field[]>([]);
@@ -62,16 +66,18 @@ export default function DynamicFormData({ waitingPageId }: Props) {
 
     const handleSaveField = (field: Field) => {
         if (fieldToEdit) {
-            // Update existing field
             setFields(prevFields =>
                 prevFields.map(f => f.id === field.id ? field : f)
             );
         } else {
-            // Add new field
             setFields(prevFields => [...prevFields, field]);
         }
         setModalOpen(false);
         setFieldToEdit(null);
+    };
+
+    const handleDeleteField = (index: number) => {
+        setFields(prevFields => prevFields.filter((_, i) => i !== index));
     };
 
     const handleSubmitForm = async () => {
@@ -110,9 +116,12 @@ export default function DynamicFormData({ waitingPageId }: Props) {
             }
 
             setSuccess(true);
-            setFields([]);
-            setTimeout(() => setSuccess(false), 3000);
 
+            if (redirectToLink) {
+                window.location.href = redirectToLink;
+            }
+
+            setTimeout(() => setSuccess(false), 3000);
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occurred. Please try again.");
         } finally {
@@ -136,7 +145,7 @@ export default function DynamicFormData({ waitingPageId }: Props) {
                                 variant="outlined"
                                 size="small"
                                 placeholder={field.placeholder}
-                                type={field.type === FieldTypeEnum.DATE_PICKER ? "date" : "text"}
+                                type={field.type}
                                 disabled
                             />
                         </Box>
@@ -153,20 +162,55 @@ export default function DynamicFormData({ waitingPageId }: Props) {
             <Grid container spacing={2}>
                 {fields.map((field, index) => (
                     <Grid item xs={12} sm={6} key={index}>
-                        <Box sx={{ borderRadius: 2 }}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant="body2" fontWeight={600}>{field.title}</Typography>
-                                <IconButton size="small" color="secondary" onClick={() => handleOpenModal(index)}>
-                                    <EditIcon fontSize="small" />
-                                </IconButton>
-                            </Box>
-                            <TextField
-                                fullWidth
-                                variant="outlined"
-                                size="small"
-                                placeholder={field.placeholder}
-                                type={field.type === FieldTypeEnum.DATE_PICKER ? "date" : "text"}
-                            />
+                        <Box
+                            sx={{
+                                border: "1px solid #e0e0e0",
+                                borderRadius: 2,
+                                p:1.8,
+                                display: "flex",
+                                alignItems: "center",
+                                height: "72px", // Match default TextField height + padding
+                            }}
+                        >
+                            {field.type === FieldTypeEnum.CHECKBOX ? (
+                                <>
+                                    <FormControlLabel
+                                        control={<Checkbox color="secondary" />}
+                                        label={field.title}
+                                        sx={{ flexGrow: 1 }}
+                                    />
+                                    <Stack direction="row" spacing={0}>
+                                        <IconButton size="small" color="secondary" onClick={() => handleOpenModal(index)}>
+                                            <EditIcon fontSize="small" />
+                                        </IconButton>
+                                        <IconButton size="small" color="secondary" onClick={() => handleDeleteField(index)}>
+                                            <Delete fontSize="small" />
+                                        </IconButton>
+                                    </Stack>
+                                </>
+                            ) : (
+                                <Box sx={{ width: "100%" }}>
+                                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                                        <Typography variant="body2" fontWeight={600}>{field.title}</Typography>
+                                        <Stack direction="row" spacing={0}>
+                                            <IconButton size="small" color="secondary" onClick={() => handleOpenModal(index)}>
+                                                <EditIcon fontSize="small" />
+                                            </IconButton>
+                                            <IconButton size="small" color="secondary" onClick={() => handleDeleteField(index)}>
+                                                <Delete fontSize="small" />
+                                            </IconButton>
+                                        </Stack>
+                                    </Box>
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        size="small"
+                                        placeholder={field.placeholder}
+                                        type={field.type}
+                                        sx={{ mt: 1 }}
+                                    />
+                                </Box>
+                            )}
                         </Box>
                     </Grid>
                 ))}
@@ -185,6 +229,7 @@ export default function DynamicFormData({ waitingPageId }: Props) {
                             flexDirection: "column",
                             alignItems: "center",
                             justifyContent: "center",
+                            height: "72px", // match input field height
                             "&:hover": { bgcolor: "secondary.light" },
                         }}
                     >

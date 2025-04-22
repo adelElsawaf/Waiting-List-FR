@@ -22,12 +22,14 @@ import {
     WorkspacePremiumRounded
 } from "@mui/icons-material";
 import { mutate } from "swr";
+import { useNavbar } from "@/app/providers/NavbarProvider";
 
 interface Props {
-    onSubmit: (id: number) => void;
+    onSubmit: (id: number , redirectToLink: string) => void;
 }
  
 export default function PageEssentials({ onSubmit }: Props) {
+    const { navbarValue } = useNavbar();
     const [formData, setFormData] = useState({ title: "", subTitle: "" });
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
@@ -39,6 +41,8 @@ export default function PageEssentials({ onSubmit }: Props) {
     const router = useRouter();
     const authToken = Cookies.get("access_token") || null;
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    const hasEnoughFreePages = navbarValue < 5 ;
 
     useEffect(() => {
         if (!authToken) router.push("/");
@@ -86,7 +90,7 @@ export default function PageEssentials({ onSubmit }: Props) {
 
             const result = await response.json();
             setSuccess(true);
-            onSubmit(result.id);
+            onSubmit(result.id, result.shareableURL);
             mutate(`${backendUrl}/users/by-token`);
         } catch (err) {
             setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
@@ -118,7 +122,6 @@ export default function PageEssentials({ onSubmit }: Props) {
             </Typography>
 
             <ImageUploader onImageSelect={(file) => setSelectedFile(file)} />
-
             <form onSubmit={(e) => e.preventDefault()}>
                 <Stack spacing={3} mt={3}>
                     <TextField
@@ -155,7 +158,7 @@ export default function PageEssentials({ onSubmit }: Props) {
                             size="large"
                             startIcon={<SendRounded />}
                             onClick={handleFreeSubmit}
-                            disabled={loading && activeBtn === "free"}
+                            disabled={loading && activeBtn === "free" || !hasEnoughFreePages}
                             sx={{ height: "56px" }}
                         >
                             {loading && activeBtn === "free" ? (
@@ -173,7 +176,7 @@ export default function PageEssentials({ onSubmit }: Props) {
                                 size="large"
                                 startIcon={<WorkspacePremiumRounded />}
                                 onClick={handlePremiumSubmit}
-                                disabled={loading && activeBtn === "premium"}
+                                disabled={loading && activeBtn === "premium" || hasEnoughFreePages}
                                 sx={{ height: "56px" }}
                             >
                                 {loading && activeBtn === "premium" ? (
