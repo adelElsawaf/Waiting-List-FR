@@ -9,6 +9,9 @@ import {
 } from "@mui/material";
 import { SendRounded } from "@mui/icons-material";
 import { PageData } from "@/app/types/PageData";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import Cookies from 'js-cookie';
+
 
 export default function WaitingPage() {
     const pathname = usePathname();
@@ -20,15 +23,10 @@ export default function WaitingPage() {
     const [loading, setLoading] = useState(true);
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-    const getClientIP = async (): Promise<string | null> => {
-        try {
-            const response = await fetch("https://api.ipify.org?format=json");
-            const result = await response.json();
-            return result.ip;
-        } catch (error) {
-            console.error("Failed to get IP", error);
-            return null;
-        }
+    const getVisitorUniqueID = async () => {
+        const fp = await FingerprintJS.load();
+        const result = await fp.get();
+        return result.visitorId;
     };
 
     useEffect(() => {
@@ -39,18 +37,26 @@ export default function WaitingPage() {
                 const res = await fetch(`${backendUrl}/waiting-page/${generatedTitle}`);
                 const pageData = await res.json();
                 setData(pageData);
-
-                const ip = await getClientIP();
-                if (ip) {
+                let existingVisitorId = Cookies.get("visitor_id");
+                if (!existingVisitorId) {
+                    existingVisitorId = await getVisitorUniqueID();
+                    existingVisitorId = existingVisitorId;
+                    Cookies.set("visitor_id", existingVisitorId);                
                     await fetch(`${backendUrl}/waiting-page-view-log/`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ waitingPageId: pageData.id, userIpAddress: ip }),
+                        body: JSON.stringify({
+                            waitingPageId: pageData.id,
+                            visitorId: existingVisitorId,
+                        }),
                     });
-                    console.log("View logged");
+                    console.log("✅ View logged");
+                }
+                 else {
+                    console.log("ℹ️ View already logged for this visitor and page.");
                 }
             } catch (err) {
-                console.error("Error fetching data or logging view:", err);
+                console.error("❌ Error fetching data or logging view:", err);
             } finally {
                 setLoading(false);
             }
@@ -58,6 +64,7 @@ export default function WaitingPage() {
 
         fetchPageAndLogView();
     }, [generatedTitle]);
+
 
     const handleChange = (fieldId: number, value: string | boolean) => {
         const val = typeof value === "boolean" ? value.toString() : value;
@@ -174,7 +181,7 @@ export default function WaitingPage() {
                     </Typography>
 
                     <Divider sx={{ my: 2 }} />
-                    {data.form.fields.map((field) => (
+                    {data.form?.fields?.map((field) => (
                         <Box key={field.id} sx={{ mb: 2 }}>
                             {field.type === "checkbox" ? (
                                 <FormControlLabel

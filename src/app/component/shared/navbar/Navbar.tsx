@@ -246,7 +246,7 @@ const Navbar = () => {
                                         textTransform: 'none',
                                         fontWeight: 500,
                                         borderRadius: '8px',
-                                        px: { xs: 1.5, sm: 2.5 },
+                                        px: { xs: 1, sm: 2.5 },
                                         fontSize: { xs: '0.875rem', sm: '1rem' }
                                     }}
                                 >
