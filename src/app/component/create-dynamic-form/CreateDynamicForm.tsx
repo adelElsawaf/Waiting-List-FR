@@ -166,7 +166,7 @@ export default function DynamicFormData({ waitingPageId, redirectToLink }: Props
                             sx={{
                                 border: "1px solid #e0e0e0",
                                 borderRadius: 2,
-                                p:1.8,
+                                p: 1.8,
                                 display: "flex",
                                 alignItems: "center",
                                 height: "72px", // Match default TextField height + padding
@@ -202,6 +202,7 @@ export default function DynamicFormData({ waitingPageId, redirectToLink }: Props
                                         </Stack>
                                     </Box>
                                     <TextField
+                                        disabled={true}
                                         fullWidth
                                         variant="outlined"
                                         size="small"

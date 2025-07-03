@@ -41,18 +41,18 @@ export default function WaitingPage() {
                 if (!existingVisitorId) {
                     existingVisitorId = await getVisitorUniqueID();
                     existingVisitorId = existingVisitorId;
-                    Cookies.set("visitor_id", existingVisitorId);                
-                    await fetch(`${backendUrl}/waiting-page-view-log/`, {
+                    Cookies.set("visitor_id", existingVisitorId);
+                    await fetch(`${backendUrl}/form-view-logs`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            waitingPageId: pageData.id,
+                            formId: pageData.forms[0].id,
                             visitorId: existingVisitorId,
                         }),
                     });
                     console.log("✅ View logged");
                 }
-                 else {
+                else {
                     console.log("ℹ️ View already logged for this visitor and page.");
                 }
             } catch (err) {
@@ -65,14 +65,14 @@ export default function WaitingPage() {
         fetchPageAndLogView();
     }, [generatedTitle]);
 
-
+    console.log(data)
     const handleChange = (fieldId: number, value: string | boolean) => {
         const val = typeof value === "boolean" ? value.toString() : value;
 
         setFormValues((prev) => ({ ...prev, [fieldId]: val }));
         setErrors((prev) => {
             const updatedErrors = { ...prev, [fieldId]: "" };
-            if (data?.form.fields[fieldId]?.type === "email" && val) {
+            if (data?.forms[0].fields[fieldId]?.type === "email" && val) {
                 const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
                 if (!emailRegex.test(val)) {
                     updatedErrors[fieldId] = `⚠️ Invalid email format`;
@@ -84,7 +84,7 @@ export default function WaitingPage() {
 
     const validateForm = () => {
         const newErrors: Record<number, string> = {};
-        data?.form.fields.forEach((field) => {
+        data?.forms[0].fields.forEach((field) => {
             const val = formValues[field.id]?.trim();
             if (field.isMandatory && !val) {
                 newErrors[field.id] = `⚠️ ${field.title} is required`;
@@ -101,7 +101,7 @@ export default function WaitingPage() {
     const handleSubmit = async () => {
         if (!validateForm()) return;
 
-        const answers = data?.form.fields.map((field) => {
+        const answers = data?.forms[0].fields.map((field) => {
             let value = formValues[field.id] || "";
             if (field.type === "checkbox") {
                 value = value === "true" ? "Yes" : "No"; // or use true/false instead of Yes/No
@@ -112,7 +112,7 @@ export default function WaitingPage() {
             };
         }) || [];
 
-        const response = await fetch(`${backendUrl}/form-submission/form/${data?.form.id}`, {
+        const response = await fetch(`${backendUrl}/form-submission/form/${data?.forms[0].id}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ answers }),
@@ -181,7 +181,7 @@ export default function WaitingPage() {
                     </Typography>
 
                     <Divider sx={{ my: 2 }} />
-                    {data.form?.fields?.map((field) => (
+                    {data.forms[0]?.fields?.map((field) => (
                         <Box key={field.id} sx={{ mb: 2 }}>
                             {field.type === "checkbox" ? (
                                 <FormControlLabel

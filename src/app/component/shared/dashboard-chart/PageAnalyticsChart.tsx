@@ -57,7 +57,7 @@ const PageAnalyticsChart = ({
     return (
         <Box mt={4}>
             <Typography variant="h6" fontWeight="bold" color="secondary" mb={2}>
-                Page Analytics
+                Form Analytics
             </Typography>
 
             <ToggleButtonGroup
@@ -136,7 +136,7 @@ const PageAnalyticsChart = ({
                 </ResponsiveContainer>
             </Box>
 
-            <Stack direction="row" spacing={2} justifyContent="flex-start" mt={2}>
+            <Stack direction="row" spacing={2} justifyContent="center" mt={2}>
                 <Chip
                     label={`Viewers: ${uniqueViewers}`}
                     sx={{ backgroundColor: COLORS[0], color: "#fff" }}

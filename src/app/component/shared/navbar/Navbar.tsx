@@ -49,7 +49,7 @@ const fetcher = (url: string) =>
     }).then((res) => res.json());
 
 const Navbar = () => {
-    const {setNavbarValue} = useNavbar();
+    const { setNavbarValue } = useNavbar();
     const [isRegisterFormOpened, setIsRegisterFormOpened] = useState(false);
     const [isLoginFormOpened, setIsLoginFormOpened] = useState(false);
     const [userFullName, setUserFullName] = useState<string | null>(null);
@@ -183,7 +183,7 @@ const Navbar = () => {
                                         />
                                         <Stack direction="row" spacing={0.5}>
                                             <Chip
-                                                label={`${freeWaitingPages} free`}
+                                                label={`${freeWaitingPages} / 5 free`}
                                                 variant="outlined"
                                                 color="success"
                                                 size="small"
@@ -353,7 +353,7 @@ const Navbar = () => {
                                         sx={{
                                             fontWeight: 500,
                                             borderRadius: '12px',
-                                            marginRight:"3px",
+                                            marginRight: "3px",
                                             borderColor: theme.palette.divider
                                         }}
                                     />
@@ -516,31 +516,33 @@ const Navbar = () => {
                         </MenuItem>
                     ))}
 
-                    {userFullName && (
-                        <>
-                            <Divider sx={{ my: 0.5 }} />
-                            <MenuItem
-                                onClick={() => {
-                                    handleLogout();
-                                    handleMenuClose();
-                                }}
-                                sx={{
-                                    py: 1.5,
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(255, 0, 0, 0.04)'
-                                    }
-                                }}
-                            >
-                                <ListItemIcon sx={{ minWidth: 40, color: 'error.main' }}>
-                                    <LogoutIcon fontSize="small" />
-                                </ListItemIcon>
-                                <Typography variant="body1" color="error.main">Sign Out</Typography>
-                            </MenuItem>
-                        </>
-                    )}
+                    {userFullName && [
+                        <Divider key="divider" sx={{ my: 0.5 }} />,
+                        <MenuItem
+                            key="logout"
+                            onClick={() => {
+                                handleLogout();
+                                handleMenuClose();
+                            }}
+                            sx={{
+                                py: 1.5,
+                                '&:hover': {
+                                    backgroundColor: 'rgba(255, 0, 0, 0.04)',
+                                },
+                            }}
+                        >
+                            <ListItemIcon sx={{ minWidth: 40, color: 'error.main' }}>
+                                <LogoutIcon fontSize="small" />
+                            </ListItemIcon>
+                            <Typography variant="body1" color="error.main">
+                                Sign Out
+                            </Typography>
+                        </MenuItem>,
+                    ]}
+
 
                     {!userFullName && (
-                        <>
+                        <div>
                             <MenuItem onClick={handleLoginFormOpening}>
                                 <ListItemIcon sx={{ minWidth: 40, color: 'secondary.main' }}>
                                     <AccountCircle fontSize="small" />
@@ -564,7 +566,7 @@ const Navbar = () => {
                                     Get Started
                                 </Typography>
                             </MenuItem>
-                        </>
+                        </div>
                     )}
                 </Menu>
             </AppBar>

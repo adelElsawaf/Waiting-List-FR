@@ -5,4 +5,5 @@ export interface PageFormData {
     id: number;
     fields: Field[];
     submissions: Submission[];
+    isActive: boolean;
 }

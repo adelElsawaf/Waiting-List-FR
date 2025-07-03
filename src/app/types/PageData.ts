@@ -7,5 +7,5 @@ export interface PageData {
     backgroundImageUrl:string;
     generatedTitle: string;
     shareableURL:string;
-    form: PageFormData;
+    forms: PageFormData[];
 }

@@ -77,7 +77,7 @@ const MyPages = () => {
                     No pages found. Please create a page.
                 </Typography>
             ) : (
-                <Grid container spacing={3}>
+                <Grid container spacing={12}>
                     {pages.map((page) => (
                         <Grid item xs={12} sm={6} md={4} lg={4} key={page.id}>
                             <Card
