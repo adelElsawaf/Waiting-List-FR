@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import {useState } from "react";
 import {
     Typography, Box, Button, TextField, Grid, Paper, IconButton,
     CircularProgress, Alert, Modal, Fade, Divider, Checkbox,
@@ -12,18 +12,19 @@ import { Field, FieldTypeEnum } from "@/app/types/FieldTypesEnum";
 import Cookies from "js-cookie";
 import { PageFormData } from "@/app/types/PageFormData";
 import FieldModal from "../create-dynamic-form/FieldModal";
+import { LockOutlined } from "@mui/icons-material";
 
 interface Props {
     form: PageFormData;
     waitingPageId: number;
     onFormUpdate: (updatedForm: PageFormData) => void;
     isPreviewMood: boolean
+    enableUpdate?: boolean
 }
 
-export default function PageForms({ form, waitingPageId, onFormUpdate, isPreviewMood }: Props) {
+export default function PageForms({ form, waitingPageId, onFormUpdate, isPreviewMood , enableUpdate}: Props) {
     const [modalOpen, setModalOpen] = useState(false);
     const [fields, setFields] = useState<Field[]>(form.fields);
-    const [seedFields, setSeedFields] = useState<Field[]>([]);
     const [fieldToEdit, setFieldToEdit] = useState<Field | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -40,32 +41,6 @@ export default function PageForms({ form, waitingPageId, onFormUpdate, isPreview
         }
         setModalOpen(true);
     };
-
-    useEffect(() => {
-        const fetchSeedFields = async () => {
-            try {
-                const response = await fetch(`${backendUrl}/field/seed`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${authToken}`,
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error("Failed to fetch seed fields.");
-                }
-
-                const seedFields: Field[] = await response.json();
-                setSeedFields(seedFields);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : "Error fetching seed fields.");
-            }
-        };
-
-        fetchSeedFields();
-        setFields(form.fields);
-    }, [form.fields, backendUrl, authToken]);
 
     const handleSaveField = (field: Field) => {
         if (fieldToEdit) {
@@ -134,29 +109,46 @@ export default function PageForms({ form, waitingPageId, onFormUpdate, isPreview
 
     return (
         <Box sx={{ width: "100%", borderRadius: 2, mt: 3 }}>
-            <Typography variant="h5" fontWeight={600} mb={3}>
-                Mandatory Fields
-            </Typography>
+            <Box mb={3}>
+                <Typography variant="h5" fontWeight={600}>Seeded Fields</Typography>
+                <Typography variant="body2" color="text.secondary" mb={2}>
+                    These fields are automatically added to every form and cannot be edited or removed.
+                </Typography>
 
-            <Grid container spacing={2}>
-                {seedFields.map((field, index) => (
-                    <Grid item xs={12} sm={6} key={index}>
-                        <Box sx={{ mb: 2 }}>
-                            <Typography variant="body1" fontWeight={600}>{field.title}</Typography>
-                            <TextField
-                                fullWidth
-                                variant="outlined"
-                                size="small"
-                                placeholder={field.placeholder}
-                                type={field.type}
-                                disabled
-                            />
-                        </Box>
-                    </Grid>
-                ))}
-            </Grid>
+                <Grid container spacing={2}>
+                    {fields.map((field, index) => (
+                        field.isSeeded && (
+                            <Grid item xs={12} sm={6} key={index}  
+                                sx={{
+                                    border: "1px solid #e0e0e0",
+                                    borderRadius: 2,
+                                    p: 2,
+                                    marginLeft:2,
+                                    marginTop:"20px",
+                                    display: "flex",
+                                    alignItems: "start",
+                                    flexDirection: "column",
+                                }}>
+                                    <Box display="flex" alignItems="center" mb={1}>
+                                        <LockOutlined fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                                        <Typography fontWeight={600}>{field.title}</Typography>
+                                    </Box>
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        size="small"
+                                        placeholder={field.placeholder}
+                                        type={field.type}
+                                        disabled
+                                    />
+                            </Grid>
+                        )
+                    ))}
+                </Grid>
+            </Box>
 
-            {seedFields.length > 0 && <Divider sx={{ my: 3 }} />}
+
+            <Divider sx={{ my: 3 }} />
 
             <Typography variant="h5" fontWeight={600} mb={3}>
                 Dynamic Form Builder
@@ -164,6 +156,7 @@ export default function PageForms({ form, waitingPageId, onFormUpdate, isPreview
 
             <Grid container spacing={2}>
                 {fields.map((field, index) => (
+                    !field.isSeeded &&
                     <Grid item xs={12} sm={6} key={field.id || index}>
                         <Box
                             sx={{
@@ -260,7 +253,7 @@ export default function PageForms({ form, waitingPageId, onFormUpdate, isPreview
                     fullWidth
                     sx={{ mt: 4 }}
                     onClick={handleSubmitForm}
-                    disabled={loading}
+                    disabled={loading || enableUpdate }
                 >
                     {loading ? <CircularProgress size={24} color="inherit" /> : "Update Form"}
                 </Button>

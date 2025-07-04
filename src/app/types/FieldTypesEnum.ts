@@ -12,4 +12,5 @@ export interface Field {
     placeholder?: string;
     isMandatory: boolean;
     type: FieldTypeEnum;
+    isSeeded?:boolean;
 }

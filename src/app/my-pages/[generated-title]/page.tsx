@@ -257,6 +257,7 @@ const MyPage = () => {
                                     return { ...prev, forms: updatedForms };
                                 });
                             }}
+                            enableUpdate={pageData.forms.length <= 5}
                         />
                         {analyticsData[selectedForm.id] && (
                             <>
